@@ -5,75 +5,279 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TODO LIST</title>
+    <title>ToDo Master | Pro Dashboard</title>
 
-    <!-- Bootstrap -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN"
-        crossorigin="anonymous"></script>
-    <!-- Font Awesome Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 
     <style>
-        .form-control {
-            padding: 1.375rem .75rem !important;
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap');
+
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            font-family: 'Inter', sans-serif;
+            color: #2d3436;
+            min-height: 100vh;
         }
+
+        .main-wrapper {
+            max-width: 1100px;
+            margin: 40px auto;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 50px;
+            border-radius: 30px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+        }
+
+        .app-title {
+            font-weight: 800;
+            font-size: 2.5rem;
+            background: linear-gradient(to right, #0d6efd, #00cec9);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+
+        .date-text {
+            font-size: 0.9rem;
+            background: rgba(13, 110, 253, 0.1);
+            color: #0d6efd;
+            padding: 8px 20px;
+            border-radius: 50px;
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        .section-header {
+            font-weight: 700;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 15px;
+        }
+
+        .count-badge {
+            font-size: 0.8rem;
+            background: #dfe6e9;
+            padding: 2px 10px;
+            border-radius: 10px;
+            color: #636e72;
+        }
+
+        .scroll-area {
+            height: 500px;
+            overflow-y: auto;
+            padding: 20px;
+            background-color: #fcfcfc;
+            border-radius: 20px;
+            border: 1px solid rgba(0,0,0,0.05);
+        }
+
+        .task-card {
+            border: none;
+            border-radius: 15px;
+            background: #fff;
+            margin-bottom: 15px !important;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .task-card:hover {
+            transform: scale(1.02);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.06);
+        }
+
+        .pending-card { border-left: 5px solid #0d6efd; }
+        .completed-card { border-left: 5px solid #00b894; opacity: 0.7; }
+
+        .task-text { font-weight: 500; font-size: 1.05rem; }
+        .completed-card .task-text { text-decoration: line-through; color: #b2bec3; }
+
+        /* ICON CENTERING & VISIBILITY FIX */
+        .btn-group .btn {
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            width: 35px;
+            height: 35px;
+            padding: 0;
+            border-radius: 50% !important;
+            margin: 0 2px;
+            transition: 0.2s;
+        }
+
+        .btn-group .btn i {
+            line-height: 1; /* Ensures icon doesn't shift vertically */
+        }
+
+        /* Input Section */
+        .input-group-pro {
+            background: #fff;
+            padding: 10px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            border: 1px solid #eee;
+        }
+
+        .form-control-pro {
+            border: none !important;
+            box-shadow: none !important;
+            padding: 15px 25px !important;
+        }
+
+        .btn-add-pro {
+            border-radius: 15px !important;
+            padding: 0 35px !important;
+            font-weight: 700;
+        }
+
+        /* DUPLICATE ERROR STYLING */
+        #duplicate-error {
+            display: none;
+            color: #e74c3c;
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-top: 10px;
+            text-align: center;
+            animation: fadeIn 0.3s;
+        }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        .dev-signature {
+            margin-top: 50px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+            font-size: 0.85rem;
+            color: #b2bec3;
+            text-align: center;
+        }
+
+        .heart-icon {
+            color: #e74c3c;
+            animation: pulse 1.5s infinite;
+            display: inline-block;
+        }
+
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.3); } 100% { transform: scale(1); } }
     </style>
 </head>
 
 <body>
     <div class="container">
-        <h3 class="pt-5 text-center">Django ToDo App</h3>
-        <div class="row">
-            <h4>My Day</h4>
-            <p class="text-muted">{% now "jS F Y" %}</p>
-            <div class="col-md-7 col-lg-7" style="height: 450px; overflow: scroll;">
-                <!-- List of all the tasks for the day -->
-                {% for i in tasks %}
-                <div class="card m-1">
-                    <div class="card-body">
-                        {{ i.task }}
-                        <span style="position: relative; float: right;">
-                            <a class="btn btn-success"><i class="fa fa-check"></i> Mark as Done</a>
-                            <a class="btn btn-danger"><i class="fa fa-trash"></i></a>
-                            <a class="btn btn-primary"><i class="fa fa-pencil"></i></a>
-                        </span>
-                    </div>
-                </div>
-                {% empty %}
-                <div class="alert alert-info m-1">
-                    No tasks found. <strong>Add a task</strong> to get started!
-                </div>
-                {% endfor %}
+        <div class="main-wrapper">
+            <div class="text-center mb-5">
+                <h1 class="app-title">ToDo Master</h1>
+                <span class="date-text"><i class="fa fa-calendar-o me-2"></i>{% now "jS F Y" %}</span>
             </div>
-            <div class="col-md-5 col-lg-5">
-                <h5>Completed Tasks</h5>
-                <!-- List of all the tasks that have completed -->
-                <div class="card m-1">
-                    <div class="card-body">
-                        This is the completed task.
+
+            <div class="row g-5">
+                <div class="col-md-6">
+                    <h5 class="section-header">
+                        <span><i class="fa fa-rocket text-primary me-2"></i>Pending</span>
+                        <span class="count-badge">{{ tasks|length }} tasks</span>
+                    </h5>
+                    <div class="scroll-area" id="pending-list">
+                        {% for i in tasks %}
+                        <div class="card task-card pending-card">
+                            <div class="card-body d-flex justify-content-between align-items-center">
+                                <span class="task-text">{{ i.task }}</span>
+                                <div class="btn-group">
+                                    <a href="{% url 'mark_as_done' i.pk %}" class="btn btn-outline-success border-0" title="Done">
+                                        <i class="fa fa-check-circle"></i>
+                                    </a>
+                                    <a href="{% url 'updated' i.pk %}" class="btn btn-outline-primary border-0" title="Edit">
+                                        <i class="fa fa-pencil-square"></i>
+                                    </a>
+                                    <a href="{% url 'delete' i.pk %}" class="btn btn-outline-danger border-0" title="Delete">
+                                        <i class="fa fa-trash"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        {% empty %}
+                        <div class="text-center py-5">
+                            <i class="fa fa-coffee fa-3x mb-3" style="color: #dfe6e9;"></i>
+                            <p class="text-muted">All caught up!</p>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <h5 class="section-header">
+                        <span><i class="fa fa-check-circle text-success me-2"></i>Completed</span>
+                        <span class="count-badge">{{ completedtask|length }} done</span>
+                    </h5>
+                    <div class="scroll-area">
+                        {% for j in completedtask %}
+                        <div class="card task-card completed-card">
+                            <div class="card-body d-flex justify-content-between align-items-center">
+                                <span class="task-text">{{ j.task }}</span>
+                                <div class="btn-group">
+                                    <a href="{% url 'mark_as_undone' j.pk %}" class="btn btn-outline-secondary border-0" title="Undo">
+                                        <i class="fa fa-undo"></i>
+                                    </a>
+                                    <a href="{% url 'delete_completed_task' j.pk %}" class="btn btn-outline-danger border-0" title="Delete">
+                                        <i class="fa fa-trash"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        {% empty %}
+                        <div class="text-center py-5">
+                            <i class="fa fa-hourglass-start fa-3x mb-3" style="color: #dfe6e9;"></i>
+                            <p class="text-muted">No completed tasks yet.</p>
+                        </div>
+                        {% endfor %}
                     </div>
                 </div>
             </div>
-        </div>
-        <div class="row">
-            <div class="col-md-6 col-lg-6 p-0" style="position: absolute; bottom: 50px;">
-                <!-- To Do Form -->
-                <form action="{% url 'addtask' %}" method="POST">
-                    {% csrf_token %}
-                    <div class="form-group">
-                        <span style="display: flex;">
-                            <input type="text" name="task" class="form-control" placeholder="Add a task">
-                            <button type="submit" class="btn btn-primary" style="width: 200px;"><i class="fa fa-plus"></i>
-                                Add</button>
-                        </span>
-                    </div>
-                </form>
+
+            <div class="row mt-5">
+                <div class="col-lg-8 mx-auto">
+                    <form id="add-task-form" action="{% url 'addtask' %}" method="POST">
+                        {% csrf_token %}
+                        <div class="input-group input-group-pro">
+                            <input type="text" id="task-input" name="task" class="form-control form-control-pro" placeholder="What needs to be done?" required>
+                            <button type="submit" class="btn btn-primary btn-add-pro">
+                                <i class="fa fa-plus me-2"></i>Add
+                            </button>
+                        </div>
+                        <div id="duplicate-error"><i class="fa fa-exclamation-circle me-1"></i> This task already exists in your pending list!</div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="dev-signature">
+                Crafted with <i class="fa fa-heart heart-icon"></i> by <b>Ghafeer Ahmad</b>
             </div>
         </div>
     </div>
-</body>
 
+    <script>
+        document.getElementById('add-task-form').addEventListener('submit', function(e) {
+            const inputField = document.getElementById('task-input');
+            const errorDiv = document.getElementById('duplicate-error');
+            const newTaskValue = inputField.value.trim().toLowerCase();
+            
+            // Get all existing pending task texts
+            const existingTasks = Array.from(document.querySelectorAll('#pending-list .task-text'))
+                                      .map(task => task.innerText.trim().toLowerCase());
+
+            if (existingTasks.includes(newTaskValue)) {
+                e.preventDefault(); 
+                errorDiv.style.display = 'block';
+                inputField.focus();
+                
+                setTimeout(() => {
+                    errorDiv.style.display = 'none';
+                }, 3000);
+            }
+        });
+    </script>
+</body>
 </html>
